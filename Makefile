@@ -147,11 +147,11 @@ create-cluster: $(KIND) $(KUBECTL) ## Create a new kind cluster designed for dev
 	@echo "apply PersistentVolumeClaim"
 	$(KUBECTL) apply -f test/pvc.yaml
 
-	$(KUBECTL) apply -f test/fv/configmap.yaml
+	$(KUBECTL) apply -f test/configmap.yaml
 
 	@echo 'Load k8s-collector image into cluster'
 	$(MAKE) load-image
-	$(KUBECTL) apply -f k8s/collector.yaml
+	$(KUBECTL) apply -f test/collector.yaml
 
 .PHONY: delete-cluster
 delete-cluster: $(KIND) ## Deletes the kind cluster $(CONTROL_CLUSTER_NAME)

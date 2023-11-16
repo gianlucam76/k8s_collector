@@ -2,11 +2,14 @@
 A Kubernetes Job to collect resources, logs and events from a Kubernetes cluster.
 k8s-collector is a Job that can collect both resources (YAMLs) and logs when created.
 
-`k8s/collector.yaml` contains the YAML to run it. Please be aware you will have to modify Job volume mounts.
-It expects two argurments:
+[k8s/collector.yaml](https://raw.githubusercontent.com/gianlucam76/k8s_collector/main/k8s/collector.yaml) contains the YAML to run it. Please be aware you will have to modify Job volume mounts (as it will store logs and resources in tmp directory).
+If you want to try it out on [Kind](https://kind.sigs.k8s.io) cluster, then you can use this YAML which uses a persistent volume provided by KinD 
+[test/fv/collector.yaml](https://raw.githubusercontent.com/gianlucam76/k8s_collector/main/test/fv/collector.yaml)
 
-1. config-map => this is the name of the ConfigMap that contain the configuration on which logs/resources to collect. This README contains an example for such ConfigMap. ConfigMap must be in the same namespae of the Job.
-2. dir => this is the directory when all collected resources and logs will be stored 
+```k8s-collector``` expects two argurments:
+
+1. dir => this is the directory when all collected resources and logs will be stored 
+2. config-map => this is the name of the ConfigMap that contain the configuration on which logs/resources to collect. This README contains an example for such ConfigMap. ConfigMap must be in the same namespae of the Job.
 
 ```yaml
 apiVersion: batch/v1

@@ -32,13 +32,18 @@ spec:
           - /k8s-collector
         args:
           - --config-map=k8s-collector
-          - --dir=/tmp
+          - --dir=/collection
         volumeMounts:
+        - mountPath: /collection
+          name: collection
         - mountPath: /tmp
           name: tmp
       volumes:
       - emptyDir: {}
         name: tmp
+      - name: collection
+        persistentVolumeClaim:
+          claimName: standard
 ---
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
