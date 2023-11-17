@@ -25,45 +25,45 @@ type Resource struct {
 	// Namespace of the resource deployed in the Cluster.
 	// Empty for resources scoped at cluster level.
 	// +optional
-	Namespace string `json:"namespace,omitempty"`
+	Namespace string `json:"namespace,omitempty" yaml:"namespace,omitempty"`
 
 	// Group of the resource deployed in the Cluster.
-	Group string `json:"group"`
+	Group string `json:"group" yaml:"group"`
 
 	// Version of the resource deployed in the Cluster.
-	Version string `json:"version"`
+	Version string `json:"version" yaml:"version"`
 
 	// Kind of the resource deployed in the Cluster.
 	// +kubebuilder:validation:MinLength=1
-	Kind string `json:"kind"`
+	Kind string `json:"kind" yaml:"kind"`
 
 	// LabelFilters allows to filter resources based on current labels.
-	LabelFilters []libsveltosv1alpha1.LabelFilter `json:"labelFilters,omitempty"`
+	LabelFilters []libsveltosv1alpha1.LabelFilter `json:"labelFilters,omitempty" yaml:"labelFilters,omitempty"`
 }
 
 // LogFilter allows to select which logs to collect
 type Log struct {
 	// Namespace of the pods deployed in the Cluster.
 	// +optional
-	Namespace string `json:"namespace,omitempty"`
+	Namespace string `json:"namespace,omitempty" yaml:"namespace,omitempty"`
 
 	// LabelFilters allows to filter pods based on current labels.
-	LabelFilters []libsveltosv1alpha1.LabelFilter `json:"labelFilters,omitempty"`
+	LabelFilters []libsveltosv1alpha1.LabelFilter `json:"labelFilters,omitempty" yaml:"labelFilters,omitempty"`
 
 	// A relative time in seconds before the current time from which to collect logs.
 	// If this value precedes the time a pod was started, only logs since the pod start will be returned.
 	// If this value is in the future, no logs will be returned. Only one of sinceSeconds or sinceTime may be specified.
 	// +optional
-	SinceSeconds *int64 `json:"sinceSeconds,omitempty"`
+	SinceSeconds *int64 `json:"sinceSeconds,omitempty" yaml:"sinceSeconds,omitempty"`
 }
 
 // Configuration defines the instruction for collector
 type Configuration struct {
 	// Resources indicates what resorces to collect
 	// +optional
-	Resources []Resource `json:"resources,omitempty"`
+	Resources []Resource `json:"resources,omitempty" yaml:"resources,omitempty"`
 
 	// Logs indicates what pods' log to collect
 	// +optional
-	Logs []Log `json:"logs,omitempty"`
+	Logs []Log `json:"logs,omitempty" yaml:"logs,omitempty"`
 }
