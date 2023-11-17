@@ -48,7 +48,7 @@ Configuration is asking for:
 ```yaml
 apiVersion: v1
 data:
-  config.yaml: '{"resources":[{"group":"","version":"v1","kind":"Secret"},{"group":"apps","version":"v1","kind":"Deployment"}],"logs":[{"namespace":"kube-system","sinceSeconds":600}]}'
+  config.json: '{"resources":[{"group":"","version":"v1","kind":"Secret"},{"group":"apps","version":"v1","kind":"Deployment"}],"logs":[{"namespace":"kube-system","sinceSeconds":600}]}'
 kind: ConfigMap
 metadata:
   name: k8s-collector
