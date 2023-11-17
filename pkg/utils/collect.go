@@ -24,6 +24,7 @@ import (
 
 	"github.com/go-logr/logr"
 	"github.com/pkg/errors"
+	"gopkg.in/yaml.v2"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
 )
@@ -65,14 +66,19 @@ func (a *Collector) loadConfiguration(ctx context.Context, logger logr.Logger) (
 
 	for k := range configMap.Data {
 		var currentConfiguration Configuration
-		err = json.Unmarshal([]byte(configMap.Data[k]), &currentConfiguration)
-		if err != nil {
-			logger.Info(fmt.Sprintf("content %q", configMap.Data[k]))
-			logger.Info(fmt.Sprintf("configMap key: %q does not contain a valid configuration instance: %v", k, err))
-			continue
+
+		err = yaml.Unmarshal([]byte(configMap.Data[k]), &currentConfiguration)
+		if err == nil {
+			return &currentConfiguration, nil
 		}
 
-		return &currentConfiguration, nil
+		err = json.Unmarshal([]byte(configMap.Data[k]), &currentConfiguration)
+		if err == nil {
+			return &currentConfiguration, nil
+		}
+
+		logger.Info(fmt.Sprintf("content %q", configMap.Data[k]))
+		logger.Info(fmt.Sprintf("configMap key: %q does not contain a valid configuration instance: %v", k, err))
 	}
 
 	return nil, nil
