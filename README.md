@@ -55,6 +55,64 @@ metadata:
   namespace: default
 ```
 
+The content of the ConfigMap can be either JSON or YAML. Same ConfigMap using YAML
+
+```yaml
+apiVersion: v1
+data:
+  config.yaml: |
+    resources:
+    - group: ""
+      version: v"
+      kind: Secret
+    - group: apps
+      version: v1
+      kind: Deployment
+    logs:
+    - namespace: kube-system
+      sinceSeconds:600
+kind: ConfigMap
+metadata:
+  name: k8s-collector
+  namespace: default
+```
+
+When collecting resources, specify the group/version/kind. That is mandatory. Anything can be passed, including CustomResourceDefinitions.
+You can filter resources by namespace and/or labels.
+For instance to collect all Secret instances but *only* Deployment instances:
+
+- in the __nginx__ namespace and
+- with labels app:nginx and version:latest
+
+use the following ConfigMap
+
+```yaml
+apiVersion: v1
+data:
+  config.yaml: |
+    resources:
+    - group: ""
+      version: v"
+      kind: Secret
+    - group: apps
+      version: v1
+      kind: Deployment
+      namespace: nginx
+      labelFilters:
+      - key: app
+        operation: Equal
+        value: nginx
+      - key: version
+        operation: Equal
+        value: latest
+kind: ConfigMap
+metadata:
+  name: k8s-collector
+  namespace: default
+```
+
+When collecting logs, you can select a subset of Pods by specifying the namespace and the label filters (same as for resources).
+
 ### Collection folders
 k8s-collector will create two folders:
 
