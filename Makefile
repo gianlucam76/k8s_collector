@@ -147,7 +147,7 @@ create-cluster: $(KIND) $(KUBECTL) ## Create a new kind cluster designed for dev
 	@echo "apply PersistentVolumeClaim"
 	$(KUBECTL) apply -f test/pvc.yaml
 
-	$(KUBECTL) apply -f test/configmap.yaml
+	$(KUBECTL) create configmap k8s-collector --from-file test/configmap.yaml
 
 	@echo 'Load k8s-collector image into cluster'
 	$(MAKE) load-image
