@@ -63,7 +63,7 @@ data:
   config.yaml: |
     resources:
     - group: ""
-      version: v"
+      version: v1
       kind: Secret
     - group: apps
       version: v1
