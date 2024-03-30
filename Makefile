@@ -36,7 +36,7 @@ SETUP_ENVTEST := $(TOOLS_BIN_DIR)/setup_envs
 CONTROLLER_GEN := $(TOOLS_BIN_DIR)/controller-gen
 KIND := $(TOOLS_BIN_DIR)/kind
 
-GOLANGCI_LINT_VERSION := "v1.52.2"
+GOLANGCI_LINT_VERSION := "v1.55.2"
 
 
 $(CONTROLLER_GEN): $(TOOLS_DIR)/go.mod # Build controller-gen from tools folder.
@@ -113,7 +113,7 @@ build: fmt vet ## Build manager binary.
 ##@ Testing
 
 # KUBEBUILDER_ENVTEST_KUBERNETES_VERSION refers to the version of kubebuilder assets to be downloaded by envtest binary.
-KUBEBUILDER_ENVTEST_KUBERNETES_VERSION = 1.28.0
+KUBEBUILDER_ENVTEST_KUBERNETES_VERSION = 1.29.0
 
 ifeq ($(shell go env GOOS),darwin) # Use the darwin/amd64 binary until an arm64 version is available
 KUBEBUILDER_ASSETS ?= $(shell $(SETUP_ENVTEST) use --use-env -p path --arch amd64 $(KUBEBUILDER_ENVTEST_KUBERNETES_VERSION))
@@ -131,7 +131,7 @@ CONTROL_CLUSTER_NAME ?= sveltos-management
 # K8S_VERSION for the Kind cluster can be set as environment variable. If not defined,
 # this default value is used
 ifndef K8S_VERSION
-K8S_VERSION := v1.28.0
+K8S_VERSION := v1.29.0
 endif
 
 
