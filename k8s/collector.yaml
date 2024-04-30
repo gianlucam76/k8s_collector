@@ -21,7 +21,7 @@ spec:
       serviceAccountName: k8s-collector
       containers:
       - name: k8s-collector
-        image: projectsveltos/k8s-collector-amd64:main
+        image: projectsveltos/k8s-collector:main
         imagePullPolicy: IfNotPresent
         env:
           - name: COLLECTOR_NAMESPACE

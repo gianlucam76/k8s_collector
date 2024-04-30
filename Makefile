@@ -32,21 +32,35 @@ GOLANGCI_LINT := $(TOOLS_BIN_DIR)/golangci-lint
 GOIMPORTS := $(TOOLS_BIN_DIR)/goimports
 GINKGO := $(TOOLS_BIN_DIR)/ginkgo
 KUBECTL := $(TOOLS_BIN_DIR)/kubectl
-SETUP_ENVTEST := $(TOOLS_BIN_DIR)/setup_envs
 CONTROLLER_GEN := $(TOOLS_BIN_DIR)/controller-gen
 KIND := $(TOOLS_BIN_DIR)/kind
 
 GOLANGCI_LINT_VERSION := "v1.55.2"
 
+KUSTOMIZE_VER := v4.5.2
+KUSTOMIZE_BIN := kustomize
+KUSTOMIZE := $(abspath $(TOOLS_BIN_DIR)/$(KUSTOMIZE_BIN)-$(KUSTOMIZE_VER))
+KUSTOMIZE_PKG := sigs.k8s.io/kustomize/kustomize/v4
+$(KUSTOMIZE): # Build kustomize from tools folder.
+	CGO_ENABLED=0 GOBIN=$(TOOLS_BIN_DIR) $(GO_INSTALL) $(KUSTOMIZE_PKG) $(KUSTOMIZE_BIN) $(KUSTOMIZE_VER)
+
+SETUP_ENVTEST_VER := v0.0.0-20240215143116-d0396a3d6f9f
+SETUP_ENVTEST_BIN := setup-envtest
+SETUP_ENVTEST := $(abspath $(TOOLS_BIN_DIR)/$(SETUP_ENVTEST_BIN)-$(SETUP_ENVTEST_VER))
+SETUP_ENVTEST_PKG := sigs.k8s.io/controller-runtime/tools/setup-envtest
+setup-envtest: $(SETUP_ENVTEST) ## Set up envtest (download kubebuilder assets)
+	@echo KUBEBUILDER_ASSETS=$(KUBEBUILDER_ASSETS)
+
+$(SETUP_ENVTEST_BIN): $(SETUP_ENVTEST) ## Build a local copy of setup-envtest.
+
+$(SETUP_ENVTEST): # Build setup-envtest from tools folder.
+	GOBIN=$(TOOLS_BIN_DIR) $(GO_INSTALL) $(SETUP_ENVTEST_PKG) $(SETUP_ENVTEST_BIN) $(SETUP_ENVTEST_VER)
 
 $(CONTROLLER_GEN): $(TOOLS_DIR)/go.mod # Build controller-gen from tools folder.
 	cd $(TOOLS_DIR); $(GOBUILD) -tags=tools -o $(subst $(TOOLS_DIR)/hack/tools/,,$@) sigs.k8s.io/controller-tools/cmd/controller-gen
 
 $(GOLANGCI_LINT): # Build golangci-lint from tools folder.
 	cd $(TOOLS_DIR); ./get-golangci-lint.sh $(GOLANGCI_LINT_VERSION)
-
-$(SETUP_ENVTEST): $(TOOLS_DIR)/go.mod # Build setup-envtest from tools folder.
-	cd $(TOOLS_DIR); $(GOBUILD) -tags=tools -o $(subst $(TOOLS_DIR)/hack/tools/,,$@) sigs.k8s.io/controller-runtime/tools/setup-envtest
 
 $(GOIMPORTS):
 	cd $(TOOLS_DIR); $(GOBUILD) -tags=tools -o $(subst $(TOOLS_DIR)/hack/tools/,,$@) golang.org/x/tools/cmd/goimports
@@ -69,7 +83,7 @@ help: ## Display this help.
 ##@ Tools
 
 .PHONY: tools
-tools: $(GOLANGCI_LINT) $(GOIMPORTS) $(GINKGO) $(KUBECTL)  $(SETUP_ENVTEST) $(CONTROLLER_GEN) ## build all tools
+tools: $(GOLANGCI_LINT) $(GOIMPORTS)  $(KUSTOMIZE) $(GINKGO) $(KUBECTL)  $(SETUP_ENVTEST) $(CONTROLLER_GEN) ## build all tools
 
 .PHONY: clean
 clean: ## Remove all built tools
@@ -90,7 +104,11 @@ PKEY ?= id_rsa
 
 .PHONY: docker-build
 docker-build: ## Build the docker image for k8s-collector
-	docker build -t $(REGISTRY)/$(IMAGE_NAME)-$(ARCH):$(TAG) -f Dockerfile . 
+	docker build --load -t $(COLLECTOR_IMG):$(TAG) -f Dockerfile . 
+
+.PHONY: docker-buildx
+docker-buildx: ## docker build for multiple arch and push to docker hub
+	docker buildx build --push --platform linux/amd64,linux/arm64 -t $(COLLECTOR_IMG):$(TAG) .
 
 ##@ Build
 
@@ -137,7 +155,7 @@ endif
 
 .PHONY: load-image
 load-image: docker-build $(KIND)
-	$(KIND) load docker-image $(COLLECTOR_IMG)-$(ARCH):$(TAG) --name $(CONTROL_CLUSTER_NAME)
+	$(KIND) load docker-image $(COLLECTOR_IMG):$(TAG) --name $(CONTROL_CLUSTER_NAME)
 
 .PHONY: create-cluster
 create-cluster: $(KIND) $(KUBECTL) ## Create a new kind cluster designed for development
