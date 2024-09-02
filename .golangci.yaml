@@ -35,11 +35,8 @@ linters-settings:
     min-complexity: 20
   goimports:
     local-prefixes: github.com/projectsveltos
-  gomnd:
-    settings:
-      mnd:
-        # don't include the "operation" and "assign"
-        checks: argument,case,condition,return
+  mnd:
+    checks: argument,case,condition,return
   gomodguard:
     # Although this is almost empty, we will evolve the list below with the
     # modules we shouldn't use for technical and/or security reasons.
@@ -51,7 +48,7 @@ linters-settings:
       # Don't merge replace directives using local path.
       local_replace_directives: true
   govet:
-    check-shadowing: true
+    shadow: true
     settings:
       printf:
         funcs:
@@ -111,7 +108,7 @@ linters:
     - gocyclo
     - gofmt
     - goimports
-    - gomnd
+    - mnd
     - gomodguard
     - goprintffuncname
     - gosec
@@ -157,7 +154,7 @@ issues:
   exclude-rules:
     - path: _test\.go
       linters:
-        - gomnd
+        - mnd
         - grouper
         - maintidx
 
@@ -177,6 +174,4 @@ run:
   allow-parallel-runners: true
   # Timeout for analysis
   timeout: 5m
-  # files to skip: they will be analyzed, but issues from them won't be reported.
-  skip-dirs:
-    - cmd/example/gen
+
